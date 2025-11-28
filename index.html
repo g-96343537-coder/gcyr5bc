@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>五年级语文练习</title>
+<style>
+  :root{
+    --card-bg: rgba(255,255,255,0.95);
+    --text:#4a2c2a;
+    --blue:#64b5f6;
+    --green:#81c784;
+    --red:#e57373;
+  }
+  body{
+    margin:0;padding:0;
+    font-family:'Ma Shan Zheng','Comic Neue','Microsoft YaHei',sans-serif;
+    background-size:cover;background-position:center;
+    background-image:url('https://wallpapercave.com/wp/e4rDnTH.jpg');
+    color:var(--text);
+    min-height:100vh;
+  }
+  h1{text-align:center;color:#ff7043;text-shadow:2px 2px 0 #ffe0b2;margin:16px 0 6px;font-size:2rem}
+  .wrap{max-width:820px;margin:auto;padding:12px}
+  .card{
+    background:var(--card-bg);
+    border-radius:20px;
+    padding:18px;
+    margin:16px auto;
+    box-shadow:0 10px 30px rgba(0,0,0,0.1);
+    transition:transform 260ms ease;
+  }
+  .card:hover{transform:translateY(-6px)}
+  .q{font-size:1.3rem;margin-bottom:12px}
+  .choices{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .choice{
+    min-width:120px;
+    padding:10px 16px;
+    border:none;border-radius:16px;
+    font-size:1rem;
+    cursor:pointer;
+    color:#3e2723;
+    background:linear-gradient(to bottom,#fff3e0,#ffe0b2);
+    box-shadow:0 6px 0 rgba(0,0,0,0.12);
+    transition:transform .2s, background .2s;
+  }
+  .choice:hover{transform:translateY(-3px)}
+  .choice.correct{background:linear-gradient(to bottom,#a5d6a7,#66bb6a);color:#1b5e20}
+  .choice.wrong{background:linear-gradient(to bottom,#ef9a9a,#e57373);color:#b71c1c}
+  .result{margin-top:20px;font-weight:bold;font-size:1.2rem;text-align:center}
+  @keyframes flashGreen{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+  .correct-flash{animation:flashGreen 700ms ease;}
+</style>
+</head>
+<body>
+  <h1>🌈  五年级成语练习（共 20 题）</h1>
+  <div class="wrap">
+    <div id="pageArea"></div>
+    <div class="result" id="score">🌟 正确：0 / 已答：0</div>
+  </div>
+
+<script>
+const questions = [
+  {q:'听了老师的详细解释后，我才______，明白了这道数学题的解法。',
+   o:['执迷不悟','恍然大悟','惊弓之鸟','哑口无言'], a:1},
+
+  {q:'在这______的时刻，消防员冲进火场救出了受困的小孩。',
+   o:['无论如何','漫不经心','千钧一发','不以为然'], a:2},
+
+  {q:'他那种______的精神，真让人佩服，即使失败了也不轻易放弃。',
+   o:['半途而废','百折不挠','垂头丧气','得过且过'], a:1},
+
+  {q:'看到桌上那盘香喷喷的炸鸡，弟弟不禁______，吵着要吃。',
+   o:['垂涎三尺','饥不择食','狼吞虎咽','津津有味'], a:0},
+
+  {q:'既然你已经知道错了，只要______，大家一定会原谅你的。',
+   o:['将错就错','改过自新','执迷不悟','自暴自弃'], a:1},
+
+  {q:'李叔叔为人______，处理事情从来不偏袒任何人，深受大家敬重。',
+   o:['斤斤计较','大公无私','假公济私','袖手旁观'], a:1},
+
+  {q:'即使在国外生活多年，爷爷依然______，希望能早日回到故乡。',
+   o:['乐不思蜀','归心似箭','流连忘返','四海为家'], a:1},
+
+  {q:'面对突如其来的意外，我们必须保持冷静，千万不要______。',
+   o:['临危不乱','手忙脚乱','处之泰然','井井有条'], a:1},
+
+  {q:'妈妈对我们的照顾______，让我们感受到家庭的温暖。',
+   o:['无微不至','敷衍塞责','漠不关心','粗心大意'], a:0},
+
+  {q:'这位演讲者在台上______地发表看法，赢得了观众热烈的掌声。',
+   o:['吞吞吐吐','沉默寡言','滔滔不绝','窃窃私语'], a:2},
+
+  {q:'只要我们______，不管是多大的困难，都一定能够克服。',
+   o:['各持己见','众志成城','孤掌难鸣','袖手旁观'], a:1},
+
+  {q:'经过多次的劝告，他依然______，继续沉迷于网络游戏。',
+   o:['悬崖勒马','执迷不悟','回心转意','当机立断'], a:1},
+
+  {q:'那位英雄______的爱国精神，将被后人永远铭记。',
+   o:['视死如归','贪生怕死','胆小如鼠','苟且偷生'], a:0},
+
+  {q:'这件事情关系重大，你必须______，千万不可草率做决定。',
+   o:['掉以轻心','三思而行','当机立断','随心所欲'], a:1},
+
+  {q:'看到同学有困难，我们应该伸出援手，绝不能______。',
+   o:['助人为乐','雪中送炭','袖手旁观','守望相助'], a:2},
+
+  {q:'谎言终究会被揭穿，就像______包不住火一样。',
+   o:['纸','布','树','草'], a:0},
+
+  {q:'为了完成这项研究，陈教授______，甚至忘了休息和吃饭。',
+   o:['游手好闲','废寝忘食','无所事事','饱食终日'], a:1},
+
+  {q:'伟明和志强是______的好朋友，他们有着共同的理想和兴趣。',
+   o:['志同道合','臭味相投','格格不入','水火不容'], a:0},
+
+  {q:'他说话一向______，从来不会拖泥带水或犹豫不决。',
+   o:['优柔寡断','斩钉截铁','模棱两可','吞吞吐吐'], a:1},
+
+  {q:'这本小说情节曲折离奇，引人入胜，让人看了______。',
+   o:['枯燥无味','爱不释手','半途而废','不屑一顾'], a:1}
+];
+
+
+const selected = Array(questions.length).fill(null);
+const answers = Array(questions.length).fill(null);
+const pageArea=document.getElementById('pageArea');
+const scoreEl=document.getElementById('score');
+
+function render(){
+  pageArea.innerHTML='';
+  questions.forEach((q,i)=>{
+    const card=document.createElement('div');
+    card.className='card';
+    const qText=document.createElement('div');
+    qText.className='q';
+    qText.textContent=`${i+1}. ${q.q}`;
+    card.appendChild(qText);
+
+    const opts=document.createElement('div');
+    opts.className='choices';
+    q.o.forEach((opt,idx)=>{
+      const b=document.createElement('button');
+      b.className='choice';
+      b.textContent=opt;
+      b.addEventListener('click',()=>{
+        if(answers[i]!==null) return;
+        selected[i]=idx;
+        checkAnswer(i,card,opts);
+      });
+      opts.appendChild(b);
+    });
+    card.appendChild(opts);
+    pageArea.appendChild(card);
+  });
+}
+
+function checkAnswer(i,card,opts){
+  const q=questions[i];
+  const chosen=selected[i];
+  const btns=opts.querySelectorAll('.choice');
+  btns.forEach(b=>b.disabled=true);
+
+  if(chosen===q.a){
+    btns[chosen].classList.add('correct');
+    answers[i]=true;
+  }else{
+    btns[chosen].classList.add('wrong');
+    const correctBtn=btns[q.a];
+    correctBtn.classList.add('correct-flash');
+    setTimeout(()=>{
+      correctBtn.classList.remove('correct-flash');
+      correctBtn.classList.add('correct');
+    },700);
+    answers[i]=false;
+  }
+  updateScore();
+}
+
+function updateScore(){
+  const correctCount=answers.filter(v=>v===true).length;
+  const answeredCount=answers.filter(v=>v!==null).length;
+  scoreEl.textContent=`🌟 正确：${correctCount} / 已答：${answeredCount}`;
+}
+
+render();
+</script>
+</body>
+</html>
